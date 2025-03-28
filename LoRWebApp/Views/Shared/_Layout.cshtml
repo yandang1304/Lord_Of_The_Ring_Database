@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewBag.Title - Lord Of The Rings</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("styles", required: false)
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="/Home/Index" title="Click if you dare!">
+            <img src="https://www.freepnglogos.com/uploads/lord-of-the-rings-png-logo/the-lord-of-the-rings-for-pc-windows-png-logo-34.png" alt="lord of the ring" width="200" height="100" />
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-link active mt-2" href="/Home/Index" title="Search Lord of the Rings Card Database">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link active mt-2" href="/Home/About" title="About Cards">About <span class="sr-only">(current)</span></a>
+                <a class="nav-link disabled mt-2" href="/Home/Details?id=5" tabindex="-1" aria-disabled="true" title="This link has been disabled since the page cannot be viewed without having selected a card">Card Detail</a>
+            </div>
+        </div>
+    </nav> 
+    <div class="navbar">
+        <main class="container">           
+                @RenderBody()         
+        </main>
+    </div>
+        
+      
+      
+    <footer class="text-center">
+        <hr />
+        <p>&copy; @DateTime.Now.Year - INFS1025 DDWT</p>
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

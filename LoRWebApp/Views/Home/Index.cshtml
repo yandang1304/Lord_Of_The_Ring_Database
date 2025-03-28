@@ -1,0 +1,137 @@
+﻿
+@using WebMatrix.Data
+
+@{
+    ViewBag.Title = "Card Home";
+    var db = Database.Open("LoRDatabase");
+    var searchText = Request.Form["searchText"];
+    var filterSearch = Request.Form["affilitiation"];
+    var sql = @"SELECT *
+                 FROM Cards AS C
+                 JOIN CardIllustrators AS CA
+                 ON CA.cardID = C.cardID
+                 JOIN CardTypes AS CT
+                 ON C.cardTypeID = CT.cardTypeID
+                 LEFT JOIN (SELECT cardID, AVG(userRating) AS Rating FROM Reviews GROUP BY cardID) AS cal
+                 ON cal.cardID = C.cardID
+                 WHERE C.cardName LIKE CONCAT('%',@0,'%')";
+    var data = db.Query(sql, searchText);
+    if (filterSearch != null && filterSearch != "All_Affiliation")
+    {
+        sql += @" AND C.affiliationType = @1
+                     ORDER BY C.cardName";
+        data = db.Query(sql, searchText, filterSearch);
+    }
+    else
+    {
+        sql += " ORDER BY C.affiliationType, C.cardName ASC";
+        data = db.Query(sql, searchText);
+    }
+
+}
+
+<div class="ml-5 mb-3">
+    <img  src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/07a49d15-10a4-45b9-b14a-2e0095b90d21/de1gs7y-06236a4f-f2b3-4fca-9993-2b8a94f456d6.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzA3YTQ5ZDE1LTEwYTQtNDViOS1iMTRhLTJlMDA5NWI5MGQyMVwvZGUxZ3M3eS0wNjIzNmE0Zi1mMmIzLTRmY2EtOTk5My0yYjhhOTRmNDU2ZDYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.U9hVs5YU6WfybpyYcwyuShWxanXM7sBduObrr-IGQ6Q" width="1000" height="200" />
+</div>
+
+<form method="post" action="/Home/Index">
+    @*<link href="~/Content/Site.css" rel="stylesheet" />*@
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <input type="text" title="Enter the name of card" class="form-control" placeholder="Search Card" name="searchText" value="@searchText" />
+        </div>
+        <div class="col-3">
+            <select name="affilitiation" id="affiliation" class="form-control">
+                <option value="All_Affiliation" @(filterSearch == "All_Affiliation" ? "selected" : "")>All Affiliation</option>
+                <option value="Encounter" @(filterSearch == "Encounter" ? "selected" : "")>Encounter</option>
+                <option value="Lore" @(filterSearch == "Lore" ? "selected" : "")>Lore</option>
+                <option value="Tactics" @(filterSearch == "Tactics" ? "selected" : "")>Tactics</option>
+                <option value="Leadership" @(filterSearch == "Leadership" ? "selected" : "")>Leadership</option>
+                <option value="Spirit" @(filterSearch == "Spirit" ? "selected" : "")>Spirit</option>
+                <option value="Neutral" @(filterSearch == "Neutral" ? "selected" : "")>Neutral</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-bs-dark-text-emphasis" title="Submit to search your card">
+            <i class="bi bi-search"></i>
+        </button>
+
+    </div>
+    <hr />
+
+    @if (data != null && data.Count() > 0)
+    {
+        <div class="row justify-content-center">
+            @foreach (var row in data)
+            {
+                var cardRules = Convert.ToString(row.cardRules ?? "");
+                var briefCardRules = cardRules.Length > 70 ? cardRules.Substring(0, 70) + "..." : cardRules;
+
+                <div class="card ml-3 mt-3 shadow-lg card-link" style="width: 18rem;">
+                    <img class="card-img-top " src="@row.imageURL" alt="@row.cardName">
+                    <div class="card-body">
+                        <a class="card-title font-weight-bold text-center d-block btn btn-outline-warning" href="/Home/Details?id=@row.cardID&type=@row.cardType">@row.cardName</a>
+                        <p class="card-affiliation text-black-50 text-center d-block"><strong>Affiliation:</strong> @row.affiliationType</p>
+                        <small class="text-muted font-italic">@briefCardRules</small>
+                        <p class="text-center font-weight-bold mt-2 text-danger">@row.cardType Card</p>
+                        <div class="mt-3">
+                            @if (row.rating != null)
+                            {
+                                <div class="rating-section text-center">
+                                    <small class="font-weight-bold">Avg. Rating:</small>
+                                    <div class="rating-stars mt-1">
+                                        @for (var i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= row.Rating)
+                                            {
+                                                <span class="text-warning">&#9733;</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">&#9734;</span>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="rating-section text-center">
+                                    <small class="font-weight-bold">Avg. Rating</small>
+                                    <div class="rating-stars mt-1">
+                                        @for (var j = 1; j <= 5; j++)
+                                        {
+                                            <span class="text-muted">&#9734;</span>
+                                        }
+                                    </div>
+                                    <small class="text-success font-weight-bold mt-2 d-block">(Be the first to rate this card!)</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+<div class="d-flex flex-column align-items-center">
+    <h2 class="text-alert text-danger text-center">Ooops! No matching card returned..</h2>
+    <img src="~/Images/50b3f7910a1cf190349180d1d3b4d670.jpg" class="rounded mx-auto d-block " style="width:30%;" />
+    <a href="/Home/Index" class="btn btn-secondary mt-4">
+        <div class="bi bi-arrow-bar-left"> Go Back</div>
+    </a>
+</div>
+        
+    }
+</form>
+
+<script>
+    var card = document.querySelectorAll('.card');
+    for (var i = 0; i < card.length; i++) {
+        card[i].addEventListener('click', function () {
+            this.querySelector('a').click();
+        })
+    }
+</script>
+

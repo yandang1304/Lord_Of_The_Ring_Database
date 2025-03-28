@@ -1,0 +1,25 @@
+﻿
+
+.card-link:hover {
+    transform: scale(1.05); /* Slightly increase the size of the card */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.9);
+    transition: transform 0.5s ease;
+}
+
+.navbar-dark {
+    background-image: linear-gradient(#007bff, #770e32);
+}
+
+.form-control:hover {
+    border-color: #007bff; /* Change the color as needed */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transition */
+}
+
+.card-title {
+    margin-bottom: 0.75rem;
+    color: #5c0f76;
+}
+.navbar {
+    background-image: url("https://slidescorner.com/wp-content/uploads/2022/09/03-Bruce-Antique-Old-Paper-Background-by-SlidesCorner.jpg");
+}
